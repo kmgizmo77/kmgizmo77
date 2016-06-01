@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,target-densitydpi=medium-dpi">
+<title>멜론웹 UX 공통모듈</title>
+<style>
+.nav_menu .nav_wrap {
+	display: table; width: 100%;
+}
+.nav_menu .nav_item {
+	display: table-cell; width: 200px; text-align: center; white-space: nowrap;
+}
+.nav_menu .nav_item > a {
+	display: inline-block; height: 49px; line-height: 49px; padding: 0 18px; color: #333; font-size: 14px;
+}
+.nav_menu .nav_item .ico {
+	display: inline-block; height: 16px; line-height: 16px; padding: 0 6px; margin-left: 5px;
+	border: 1px solid #b2b2b2; border-radius: 10px; color: #9f9f9f; font-size: 11px;
+}
+.nav_menu .nav_item .is_active {
+	position: relative; color: #01b925;
+}
+div[data-logging]{
+	display:none !important;
+}
+div.cont {
+	padding-left:20px;
+}
+
+</style>
+<script type="text/javascript" src="../demo/js/jquery-1.11.3.js"></script>
+<script type="text/javascript" src="pvlog/pvlog.js"></script>
+</head>
+
+<body>
+<div data-logging="http://log.melon.com/pv?log=&LP10&&&10010101&@CR1@&N10001&12345&01&D01&2015&TM0001&1&&&" data-id="10010101" ></div>
+<h1>Pvlog 적용 방법</h1>
+
+<h2>1) pvlog.js 적용 </h2>
+<div class="cont">
+<p>
+파일 경로: http://a.melon.com/mobile40/GUIDE/js/pvlog.js
+</p>
+<h4>첫 진입시 </h4>
+<p>
+uiscript.js 에서 자동처리 해준다.<br />
+단, uiscript.js 가 없는 페이지일 경우, 다음 코드를 추가해주어야 한다. 
+</p>		
+<pre>
+	$(window).load(function() {
+		pvlog.init();
+	});
+</pre>
+</div>
+<h2>Multi page</h2>
+<div class="cont">
+<p>Multi page 란 pvlog menuid가 한 화면에 1개 이상 존재하는 경우를 말한다.</p>
+	
+	<h3>구조 규칙</h3>		
+	<h4>1. 탭</h4>
+<pre>
+&lt;!-- 탭 버튼 --&gt;
+&lt;ul class="nav_wrap"&gt;
+	&lt;li class="nav_item"&gt; &lt;a href="#" class="is_active"&gt;탭 메뉴1&lt;/a&gt;&lt;/li&gt;
+	&lt;li class="nav_item"&gt; &lt;a href="#"&gt; 탭 메뉴2 &lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!--  탭 컨텐츠 --&gt;
+
+&lt;div class="content-tab"&gt;탭 컨텐츠 1&lt;/div&gt;
+&lt;div class="content-tab"&gt;탭 컨텐츠 2&lt;/div&gt;			
+</pre>
+
+<h4>2. 탭 버튼 순서와 탭 컨텐츠 순서가 다른 경우 </h4>
+<pre>
+&lt;!—탭 버튼 --&gt;
+&lt;ul class="nav_wrap"&gt;
+	&lt;li class="nav_item" data-index ="slide인덱스"&gt;
+		&lt;a href="#" class="is_active"&gt;탭 메뉴1&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class="nav_item" data-index ="slide인덱스"&gt;
+		&lt;a href="#"&gt;탭 메뉴2&lt;/a&gt;
+	&lt;/li&gt;
+&lt;/ul&gt;
+</pre>
+<h4>3.  스와이프 페이지</h4>
+<pre>
+&lt;!—스와이프 메뉴 버튼 --&gt;
+&lt;div class="nav_menu"&gt;
+	&lt;nav&gt;
+		&lt;ul class="nav_wrap"&gt;
+			&lt;li class="nav_item" &gt; &lt;a href="#" &gt;메뉴1&lt;/a&gt;&lt;/li&gt;
+			&lt;li class="nav_item" &gt;&lt;a href="#" &gt; 메뉴2&lt;/a&gt;&lt;/li&gt;
+		&lt;/ul&gt;
+	&lt;/nav&gt;
+&lt;/div&gt;
+&lt;!— 스와이프 컨텐츠 --&gt;
+&lt;div class="swiper_container"&gt; 
+	&lt;div class="swiper_wrapper"&gt;
+		&lt;article class="swiper_slide"&gt;슬라이더 컨텐츠 1&lt;/article&gt;	
+		&lt;article class="swiper_slide"&gt;슬라이더 컨텐츠 2&lt;/article&gt;
+	&lt;/div&gt;
+&lt;/div&gt;
+</pre>
+<h3>적용방법</h3>
+<h4>첫 진입시</h4>
+<pre>
+	$(window).load(function() {
+		pvlog.init();
+	});
+</pre>
+<p>uiscript.js 에서 자동처리 해준다.<br />
+<h4>ajax로 탭 컨텐츠를 로드 하는 경우</h4>
+<ul>
+	<li>		
+		<p>ajax done callback으로 pvlog.set() 호출</p> 
+<pre>
+$.ajax({
+	url: url
+}).done(function(data){   
+	pvlog.init();
+});
+</pre>
+
+</li>
+<li>
+<p> 또는 defer object 이용 하여
+ajax return 값을 Deferred object변수에 담아, <br />
+ajax수행이 완료되었을 때 pvlog.set() 함수를 호출한다. </p>
+<pre>
+var defer = $.Deferred();
+defer  = $.ajax({
+	url: url
+});
+
+defer.done(function(data){
+	pvlog.init();
+});
+</pre>	
+</li>
+</ul>
+
+<h4>스와이프, 또는 메뉴 선택시</h4>
+<p>uiscript.js 에서 자동처리해 준다.<br />
+단, uiscript.js 가 없는 페이지일 경우, <br />
+ajax수행이 완료되었을 때 pvlog.set() 함수를 호출한다.</p>
+	<pre>
+	var defer = $.Deferred();
+	defer  = $.ajax({
+		url: url
+	});
+
+	defer.done(function(data){
+		pvlog.set();
+	});
+	</pre>
+
+<h4>필터, 더보기, paging 액션</h4>
+	ajax수행이 완료되었을 때 pvlog.set() 함수를 호출한다.
+	<pre>
+	var defer = $.Deferred();
+	defer  = $.ajax({
+		url: url
+	});
+
+	defer.done(function(data){
+		pvlog.set();
+	});
+	</pre>
+</div>
+<h4>ajax data 타입이 json 일경우</h4>
+<p>
+	
+</p>
+<h2>App -> Webview 통신 방법</h2>
+<div class="cont">
+<p><strong>pvlog.send(menuId)</strong> 호출</p>
+<p><사용예제></p>
+	<pre>
+	function __appSendMenuId(menuId) {
+		pvlog.send(menuId);
+	}
+	</pre>	
+</div>
+<p><a href="pvlog/pvlog.js" target="_blank">소스코드</a></p>
+</body>
+</html>
